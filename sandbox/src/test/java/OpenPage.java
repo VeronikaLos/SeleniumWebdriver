@@ -1,15 +1,18 @@
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
 public class OpenPage {
-    private WebDriver driver;
+    private static WebDriver driver;
 
     @BeforeEach
     public void setUp() {
-        driver = new ChromeDriver();
+        if (driver == null) {
+            driver = new ChromeDriver();
+        }
     }
 
     @AfterEach
@@ -22,4 +25,16 @@ public class OpenPage {
         driver.get("https://www.onliner.by/");
     }
 
+    @Test
+    public void canLoginAsAdmin() {
+        driver.get("http://localhost/litecart/admin/");
+
+        driver.findElement(By.name("username")).clear();
+        driver.findElement(By.name("username")).sendKeys("admin");
+
+        driver.findElement(By.name("password")).clear();
+        driver.findElement(By.name("password")).sendKeys("admin2");
+
+        driver.findElement(By.name("login")).click();
+    }
 }
