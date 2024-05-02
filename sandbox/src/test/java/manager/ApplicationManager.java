@@ -18,7 +18,7 @@ public class ApplicationManager {
         if (driver == null) {
             if ("chrome".equals(browser)) {
                 driver = new ChromeDriver();
-                driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+                driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
             } else if ("firefox".equals(browser)) {
                 FirefoxOptions options = new FirefoxOptions();
                 options.setBinary(new FirefoxBinary(new File("C:\\Program Files\\Firefox Nightly\\firefox.exe")));
