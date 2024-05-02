@@ -31,4 +31,17 @@ public class AdminPage extends TestBase {
             }
         }
     }
+
+    @Test
+    public void canCheckAllStickers() {
+        app.driver.get("http://localhost/litecart/en/");
+        int x = app.driver.findElements(By.cssSelector("div.middle>div.content>div.box li")).size();
+        if (x > 0) {
+            for (int i = 0; i < x; i++) {
+                var item = app.driver.findElements(By.cssSelector("div.middle>div.content>div.box li")).get(i);
+                int size = item.findElements(By.cssSelector("[class^=sticker]")).size();
+                Assertions.assertEquals(size, 1);
+            }
+        }
+    }
 }
