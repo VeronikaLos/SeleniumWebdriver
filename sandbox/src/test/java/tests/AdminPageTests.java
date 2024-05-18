@@ -78,4 +78,32 @@ public class AdminPageTests extends TestBase {
             app.driver.navigate().back();
         }
     }
+
+    @Test
+    public void canCheckZonesInCountries() {
+        app.loginAsAdmin();
+        app.driver.get("http://localhost/litecart/admin/?app=geo_zones&doc=geo_zones");
+
+        // Находим список стран, имеющих зоны
+        List<WebElement> rowsCountries = app.driver.findElements(By.cssSelector("tr.row td:nth-child(3) > a"));
+        //создаем стринг список из имен стран
+        List<String> countriesName = rowsCountries.stream().map(WebElement::getText).toList();
+
+        // Проходим по каждой стране
+        for (String country : countriesName) {
+            // Находим страну по имени и кликаем на нее
+            app.driver.findElement(By.xpath(String.format("//*[ text() = '%s']", country))).click();
+
+            //создаем список имен зон
+            List<String> zoneNames = app.driver.findElements(By.cssSelector("table.dataTable td:nth-child(3) select [selected=\"selected\"]"))
+                    .stream().map(WebElement::getText).toList();
+
+            //создаем сортированный список имен зон
+            List<String> zoneNamesSorted = zoneNames.stream().sorted().toList();
+
+            // Проверяем, что оригинальный список и сортированный список совпадают
+            Assertions.assertEquals(zoneNamesSorted, zoneNames);
+            app.driver.navigate().back();
+        }
+    }
 }
