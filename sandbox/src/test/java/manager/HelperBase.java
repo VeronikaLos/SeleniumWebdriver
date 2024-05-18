@@ -8,6 +8,7 @@ public class HelperBase {
     public HelperBase(ApplicationManager manager) {
         this.manager=manager;
     }
+
     protected void click (By locator) {
         manager.driver.findElement(locator).click();
     }
