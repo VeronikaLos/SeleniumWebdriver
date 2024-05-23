@@ -66,10 +66,10 @@ public class AdminPageTests extends TestBase {
         //берем список элементов где кол во зон > 0 и заходим внутрь
         for (String country : countries) {
             app.driver.findElement(By.xpath(String.format("//*[ text() = '%s']", country))).click();
-            List<WebElement> zones = app.driver.findElements(By.cssSelector("table#table-zones tr td:nth-child(3) input[type=hidden]"));
+            List<WebElement> zones = app.driver.findElements(By.xpath("//table[@id='table-zones']//input[@type='hidden' and contains(@name, 'name')]"));
             var zoneList = new ArrayList<String>();
             for (WebElement zone : zones) {
-                var text = zone.getAttribute("value");
+                var text = zone.getText();
                 zoneList.add(text);
             }
             var zoneListOld = zoneList;
