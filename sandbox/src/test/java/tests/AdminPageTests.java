@@ -38,8 +38,9 @@ public class AdminPageTests extends TestBase {
     @Test
     public void canCheckAllCountries() {
         app.loginAsAdmin();
-        app.driver.get("http://localhost/litecart/admin/?app=countries&doc=countries");
+        app.driver.get("http://localhost:8080/litecart/admin/?app=countries&doc=countries");
         List<WebElement> rowsCountries = app.driver.findElements(By.cssSelector("td#content tr.row td:nth-child(5)> a"));
+        //Что значит stream/map??
         List<String> result = rowsCountries.stream().map(WebElement::getText).toList();
         var result2 = result;
         result = result.stream().sorted().toList();
@@ -66,10 +67,10 @@ public class AdminPageTests extends TestBase {
         //берем список элементов где кол во зон > 0 и заходим внутрь
         for (String country : countries) {
             app.driver.findElement(By.xpath(String.format("//*[ text() = '%s']", country))).click();
-            List<WebElement> zones = app.driver.findElements(By.xpath("//table[@id='table-zones']//input[@type='hidden' and contains(@name, 'name')]"));
+            List<WebElement> zones = app.driver.findElements(By.xpath("//table[@id='table-zones']//a[@id='remove-zone']//parent::td//parent::tr/td[3]"));
             var zoneList = new ArrayList<String>();
             for (WebElement zone : zones) {
-                var text = zone.getText();
+                var text = zone.getAttribute("textContent");
                 zoneList.add(text);
             }
             var zoneListOld = zoneList;

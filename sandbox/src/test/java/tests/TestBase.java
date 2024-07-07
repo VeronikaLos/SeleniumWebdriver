@@ -1,6 +1,7 @@
 package tests;
 
 import manager.ApplicationManager;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -58,9 +59,9 @@ public class TestBase {
         app.init(System.getProperty("browser", "chrome"));
     }
 
-    //    @AfterEach
-    //    public void tearDown() {
-    //        driver.quit();
-    //        driver = null;
-    //    }
+        @AfterEach
+        public void tearDown() {
+        app.driver.quit();
+        app.driver=null;
+        }
 }
