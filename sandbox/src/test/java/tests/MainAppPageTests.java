@@ -1,9 +1,11 @@
 package tests;
 
+import manager.CommonFunctions;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.Select;
 
 import java.util.List;
 
@@ -100,5 +102,34 @@ public class MainAppPageTests extends TestBase {
         Assertions.assertTrue(defineFontSize(campaignPriceSizeMainPage) > defineFontSize(regularPriceSizeMainPage));
         Assertions.assertTrue(defineFontSize(campaignPriceSizeProductPage) > defineFontSize(regularPriceSizeProductPage));
 
+    }
+
+    @Test
+    public void canCheckUserRegistration() {
+        app.driver.get("http://localhost:8080/litecart/en/");
+        app.driver.findElement(By.linkText("New customers click here")).click();
+        String firstname = CommonFunctions.randomString(5);
+        app.driver.findElement(By.name("firstname")).sendKeys(firstname);
+        String lastname = CommonFunctions.randomString(5);
+        app.driver.findElement(By.name("lastname")).sendKeys(lastname);
+        app.driver.findElement(By.name("address1")).sendKeys("address1");
+        app.driver.findElement(By.name("postcode")).sendKeys("12345");
+        app.driver.findElement(By.name("city")).sendKeys("city");
+        app.driver.findElement(By.className("select2-selection__arrow")).click();
+        app.driver.findElements(By.className("select2-results__option")).get(224).click();
+        Select list = new Select(app.driver.findElement(By.cssSelector("select[name=zone_code]")));
+        list.selectByValue("AZ");
+        String email = String.format("%s@gmail.com", firstname);
+        app.driver.findElement(By.name("email")).sendKeys(email);
+        app.driver.findElement(By.name("phone")).sendKeys("555");
+        String password = CommonFunctions.randomString(6);
+        app.driver.findElement(By.name("password")).sendKeys(password);
+        app.driver.findElement(By.name("confirmed_password")).sendKeys(password);
+        app.driver.findElement(By.name("create_account")).click();
+        app.driver.findElement(By.linkText("Logout")).click();
+        app.driver.findElement(By.name("email")).sendKeys(email);
+        app.driver.findElement(By.name("password")).sendKeys(password);
+        app.driver.findElement(By.name("login")).click();
+        app.driver.findElement(By.linkText("Logout")).click();
     }
 }
