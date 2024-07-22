@@ -1,11 +1,16 @@
 package tests;
 
+import manager.CommonFunctions;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.Select;
 
+import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class AdminPageTests extends TestBase {
 
@@ -106,5 +111,62 @@ public class AdminPageTests extends TestBase {
             Assertions.assertEquals(zoneNamesSorted, zoneNames);
             app.driver.navigate().back();
         }
+    }
+
+    @Test
+    public void canCheckAddNewProduct() {
+        app.loginAsAdmin();
+        app.driver.get("http://localhost:8080/litecart/admin/?app=catalog&doc=catalog");
+
+        // General tab
+        app.driver.findElement(By.cssSelector("[href='http://localhost:8080/litecart/admin/?category_id=0&app=catalog&doc=edit_product']")).click();
+        app.driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        app.driver.findElement(By.cssSelector("[type='radio']")).click();
+        String name = CommonFunctions.randomString(5);
+        app.driver.findElement(By.cssSelector("[name='name[en]']")).sendKeys(name);
+        String code = CommonFunctions.randomString(3);
+        app.driver.findElement(By.cssSelector("[name='code']")).sendKeys(code);
+        app.driver.findElement(By.cssSelector("input[value='1-2']")).click();
+        WebElement quantity = app.driver.findElement(By.cssSelector("input[name=quantity]"));
+        quantity.clear();
+        quantity.sendKeys("20");
+        String str = "src/test/resources/Files/img2024.png";
+        Path path = Path.of(str).toAbsolutePath();
+        app.driver.findElement(By.cssSelector("input[name='new_images[]']")).sendKeys(String.format("%s", path));
+        app.driver.findElement(By.cssSelector("input[name='date_valid_from']")).sendKeys("01/01/2024");
+        app.driver.findElement(By.cssSelector("input[name='date_valid_to']")).sendKeys("12/31/2027");
+
+        // Information tab
+        app.driver.findElement(By.cssSelector("[href='#tab-information']")).click();
+        app.driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        Select manufacturer = new Select(app.driver.findElement(By.cssSelector("select[name='manufacturer_id']")));
+        manufacturer.selectByValue("1");
+        String keywords = CommonFunctions.randomString(3);
+        app.driver.findElement(By.cssSelector("input[name='keywords']")).sendKeys(keywords);
+        String shortDescription = CommonFunctions.randomString(3);
+        app.driver.findElement(By.cssSelector("input[name='short_description[en]']")).sendKeys(shortDescription);
+        String description = CommonFunctions.randomString(10);
+        app.driver.findElement(By.cssSelector("div.trumbowyg-editor")).sendKeys(description);
+        String headTitle = CommonFunctions.randomString(6);
+        app.driver.findElement(By.cssSelector("input[name='head_title[en]']")).sendKeys(headTitle);
+        String metaDescription = CommonFunctions.randomString(7);
+        app.driver.findElement(By.cssSelector("input[name='meta_description[en]']")).sendKeys(metaDescription);
+
+        //Prices tab
+        app.driver.findElement(By.cssSelector("[href='#tab-prices']")).click();
+        app.driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        WebElement price = app.driver.findElement(By.cssSelector("input[name=purchase_price]"));
+        price.clear();
+        price.sendKeys("5.55");
+        Select currencyPrice = new Select(app.driver.findElement(By.cssSelector("select[name='purchase_price_currency_code']")));
+        currencyPrice.selectByValue("USD");
+        app.driver.findElement(By.cssSelector("input[name='prices[USD]']")).sendKeys("11.55");
+        app.driver.findElement(By.cssSelector("input[name='prices[EUR]']")).sendKeys("15.33");
+        app.driver.findElement(By.cssSelector("button[name='save']")).click();
+        WebElement search = app.driver.findElement(By.cssSelector("input[name='query']"));
+        search.sendKeys(name);
+        search.sendKeys(Keys.ENTER);
+        String product = app.driver.findElement(By.cssSelector("tr.footer td")).getText();
+        Assertions.assertEquals("Products: 1", product);
     }
 }
