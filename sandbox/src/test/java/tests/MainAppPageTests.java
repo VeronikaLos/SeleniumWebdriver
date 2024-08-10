@@ -176,9 +176,6 @@ public class MainAppPageTests extends TestBase {
             sizeNew--;
             //ждем пока кол во товара будет на единицу меньше
             wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("table.dataTable td.item"), sizeNew));
-            System.out.println(size);
-            System.out.println();
-            System.out.println(sizeNew);
         }
         String text = app.driver.findElement(By.cssSelector("div#checkout-cart-wrapper em")).getText();
         Assertions.assertEquals(text, "There are no items in your cart.");
