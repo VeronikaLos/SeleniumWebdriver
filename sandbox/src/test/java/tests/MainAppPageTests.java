@@ -5,8 +5,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
 import java.util.List;
 
 public class MainAppPageTests extends TestBase {
@@ -132,4 +135,53 @@ public class MainAppPageTests extends TestBase {
         app.driver.findElement(By.name("login")).click();
         app.driver.findElement(By.linkText("Logout")).click();
     }
+
+    @Test
+    public void canCheckAddItemsToCart() {
+        app.driver.get("http://localhost:8080/litecart/en/");
+        WebDriverWait wait = new WebDriverWait(app.driver, Duration.ofSeconds(10));
+
+        for (int i = 0; i < 3; i++) {
+            //берем первый товар в списке и открываем его
+            app.driver.findElements(By.cssSelector("div#box-most-popular li")).get(0).click();
+
+            // проверяем есть ли опция select
+            int options = app.driver.findElements(By.cssSelector("div.buy_now tbody tr")).size();
+            if (options == 2) {
+                Select size = new Select(app.driver.findElement(By.cssSelector("td.options select")));
+                size.selectByValue("Small");
+            }
+
+            //находим элемент кол-ва товаров в корзине
+            WebElement cart = app.driver.findElement(By.cssSelector("div#cart a.content span.quantity"));
+            String quantity = cart.getAttribute("textContent");
+
+            //добавляем товар в корзину
+            app.driver.findElement(By.cssSelector("button[type='submit'][name='add_cart_product']")).click();
+
+            //ждем пока старое кол во исчезнет
+            wait.until(ExpectedConditions.invisibilityOfElementWithText(By.cssSelector("div#cart a.content span.quantity"), quantity));
+
+            //возвращаемся на главную страницу
+            app.driver.findElement(By.cssSelector("a[href='/litecart/']")).click();
+        }
+        // зайти в корзину
+        app.driver.findElement(By.cssSelector("div#cart a.link")).click();
+        //Узнать кол во продуктов в корзине
+        int size = app.driver.findElements(By.cssSelector("table.dataTable td.item")).size();
+        int sizeNew = size;
+        for (int i = 0; i < size; i++) {
+            //найти и нажать кнопку ремув
+            app.driver.findElement(By.cssSelector("button[type='submit'][name='remove_cart_item']")).click();
+            sizeNew--;
+            //ждем пока кол во товара будет на единицу меньше
+            wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("table.dataTable td.item"), sizeNew));
+            System.out.println(size);
+            System.out.println();
+            System.out.println(sizeNew);
+        }
+        String text = app.driver.findElement(By.cssSelector("div#checkout-cart-wrapper em")).getText();
+        Assertions.assertEquals(text, "There are no items in your cart.");
+    }
 }
+

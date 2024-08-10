@@ -2,6 +2,7 @@ package manager;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -17,7 +18,9 @@ public class ApplicationManager {
     public void init(String browser) {
         if (driver == null) {
             if ("chrome".equals(browser)) {
-                driver = new ChromeDriver();
+                ChromeOptions options = new ChromeOptions();
+                options.addArguments("--disable-search-engine-choice-screen");
+                driver = new ChromeDriver(options);
                 driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
             } else if ("firefox".equals(browser)) {
                 FirefoxOptions options = new FirefoxOptions();
