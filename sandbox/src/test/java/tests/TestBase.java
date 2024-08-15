@@ -4,7 +4,10 @@ import manager.ApplicationManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,6 +50,25 @@ public class TestBase {
             number = Double.parseDouble(numberStr);
         }
         return number;
+    }
+
+    protected static void switchToNewWindow(WebDriverWait wait, String mainWindowId) {
+        // подождать когда кол-во окон станет равно 2
+        wait.until(ExpectedConditions.numberOfWindowsToBe(2));
+        //получить идентификаторы окон
+        Set<String> newWindows = app.driver.getWindowHandles();
+        String newWind = "";
+        for (String id : newWindows) {
+            if (!mainWindowId.equals(id)) {
+                newWind = id;
+            }
+        }
+        //Переключиться в новое окно
+        app.driver.switchTo().window(newWind);
+        //закрыть окно
+        app.driver.close();
+        //Переключиться в основное окно
+        app.driver.switchTo().window(mainWindowId);
     }
 
 

@@ -7,8 +7,10 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -169,4 +171,45 @@ public class AdminPageTests extends TestBase {
         String product = app.driver.findElement(By.cssSelector("tr.footer td")).getText();
         Assertions.assertEquals("Products: 1", product);
     }
+
+    @Test
+    public void canCheckLinksOnCountriesPage() {
+        app.loginAsAdmin();
+        WebDriverWait wait = new WebDriverWait(app.driver, Duration.ofSeconds(10));
+        app.driver.get("http://localhost:8080/litecart/admin/?app=countries&doc=countries");
+        app.driver.findElement(By.cssSelector("a[href='http://localhost:8080/litecart/admin/?app=countries&doc=edit_country']")).click();
+
+        //получить айди текущего окна
+        String mainWindowId = app.driver.getWindowHandle();
+
+        // Code
+        app.driver.findElement(By.cssSelector("a[href='http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2'] i.fa-external-link")).click();
+        switchToNewWindow(wait, mainWindowId);
+
+        // Code 2
+        app.driver.findElement(By.cssSelector("a[href='http://en.wikipedia.org/wiki/ISO_3166-1_alpha-3'] i.fa-external-link")).click();
+        switchToNewWindow(wait, mainWindowId);
+
+        // Tax ID Format
+        app.driver.findElement(By.cssSelector("tbody tr:nth-child(6) a[href='https://en.wikipedia.org/wiki/Regular_expression'] i.fa-external-link")).click();
+        switchToNewWindow(wait, mainWindowId);
+
+        // Address Format
+        app.driver.findElement(By.cssSelector("a[href='http://www.addressdoctor.com/en/countries-data/address-formats.html'] i.fa-external-link")).click();
+        switchToNewWindow(wait, mainWindowId);
+
+        // Postcode Format
+        app.driver.findElement(By.cssSelector("tbody tr:nth-child(8) a[href='https://en.wikipedia.org/wiki/Regular_expression'] i.fa-external-link")).click();
+        switchToNewWindow(wait, mainWindowId);
+
+        // Currency Code
+        app.driver.findElement(By.cssSelector("a[href='https://en.wikipedia.org/wiki/List_of_countries_and_capitals_with_currency_and_language'] i.fa-external-link")).click();
+        switchToNewWindow(wait, mainWindowId);
+
+        // Phone Country Code
+        app.driver.findElement(By.cssSelector("a[href='https://en.wikipedia.org/wiki/List_of_country_calling_codes'] i.fa-external-link")).click();
+        switchToNewWindow(wait, mainWindowId);
+
+    }
+
 }
