@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,14 +59,12 @@ public class TestBase {
         wait.until(ExpectedConditions.numberOfWindowsToBe(2));
         //получить идентификаторы окон
         Set<String> newWindows = app.driver.getWindowHandles();
-        String newWind = "";
-        for (String id : newWindows) {
-            if (!mainWindowId.equals(id)) {
-                newWind = id;
-            }
-        }
+
+        List<String> winds = newWindows.stream().filter(w -> !w.equals(mainWindowId)).toList();
+        String newWind = winds.get(0);
+
         //Переключиться в новое окно
-        app.driver.switchTo().window(newWind);
+        app.driver.switchTo().window(String.valueOf(newWind));
         //закрыть окно
         app.driver.close();
         //Переключиться в основное окно
@@ -81,9 +81,9 @@ public class TestBase {
         app.init(System.getProperty("browser", "chrome"));
     }
 
-        @AfterEach
-        public void tearDown() {
+    @AfterEach
+    public void tearDown() {
         app.driver.quit();
-        app.driver=null;
-        }
+        app.driver = null;
+    }
 }

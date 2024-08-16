@@ -182,34 +182,12 @@ public class AdminPageTests extends TestBase {
         //получить айди текущего окна
         String mainWindowId = app.driver.getWindowHandle();
 
-        // Code
-        app.driver.findElement(By.cssSelector("a[href='http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2'] i.fa-external-link")).click();
-        switchToNewWindow(wait, mainWindowId);
+        List<WebElement> links = app.driver.findElements(By.cssSelector("i.fa-external-link"));
 
-        // Code 2
-        app.driver.findElement(By.cssSelector("a[href='http://en.wikipedia.org/wiki/ISO_3166-1_alpha-3'] i.fa-external-link")).click();
-        switchToNewWindow(wait, mainWindowId);
-
-        // Tax ID Format
-        app.driver.findElement(By.cssSelector("tbody tr:nth-child(6) a[href='https://en.wikipedia.org/wiki/Regular_expression'] i.fa-external-link")).click();
-        switchToNewWindow(wait, mainWindowId);
-
-        // Address Format
-        app.driver.findElement(By.cssSelector("a[href='http://www.addressdoctor.com/en/countries-data/address-formats.html'] i.fa-external-link")).click();
-        switchToNewWindow(wait, mainWindowId);
-
-        // Postcode Format
-        app.driver.findElement(By.cssSelector("tbody tr:nth-child(8) a[href='https://en.wikipedia.org/wiki/Regular_expression'] i.fa-external-link")).click();
-        switchToNewWindow(wait, mainWindowId);
-
-        // Currency Code
-        app.driver.findElement(By.cssSelector("a[href='https://en.wikipedia.org/wiki/List_of_countries_and_capitals_with_currency_and_language'] i.fa-external-link")).click();
-        switchToNewWindow(wait, mainWindowId);
-
-        // Phone Country Code
-        app.driver.findElement(By.cssSelector("a[href='https://en.wikipedia.org/wiki/List_of_country_calling_codes'] i.fa-external-link")).click();
-        switchToNewWindow(wait, mainWindowId);
-
+        for (WebElement link : links) {
+            link.click();
+            switchToNewWindow(wait, mainWindowId);
+        }
     }
 
 }
