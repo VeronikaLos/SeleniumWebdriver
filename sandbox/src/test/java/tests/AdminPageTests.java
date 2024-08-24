@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -190,4 +191,24 @@ public class AdminPageTests extends TestBase {
         }
     }
 
+    @Test
+    public void canCheckBrowserLogs() {
+        app.loginAsAdmin();
+        app.driver.get("http://localhost:8080/litecart/admin/?app=catalog&doc=catalog&category_id=1");
+        app.driver.findElement(By.cssSelector("a[href='http://localhost:8080/litecart/admin/?app=catalog&doc=catalog&category_id=2']")).click();
+        int count = app.driver.findElements(By.cssSelector("i.fa-pencil")).size();
+        for (int i = 0; i < count; i++) {
+            app.driver.findElements(By.cssSelector("i.fa-pencil")).get(i).click();
+            for (LogEntry l : app.driver.manage().logs().get("browser").getAll()) {
+                System.out.println(l);
+                Assertions.assertNull(l, l.getLevel() + l.getMessage());
+            }
+
+            app.driver.navigate().back();
+            for (LogEntry l : app.driver.manage().logs().get("browser").getAll()) {
+                System.out.println(l);
+                Assertions.assertNull(l, l.getLevel() + l.getMessage());
+            }
+        }
+    }
 }
