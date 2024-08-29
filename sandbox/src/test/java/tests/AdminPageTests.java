@@ -187,7 +187,7 @@ public class AdminPageTests extends TestBase {
 
         for (WebElement link : links) {
             link.click();
-            switchToNewWindow(wait, mainWindowId);
+            app.switchToNewWindow(mainWindowId);
         }
     }
 

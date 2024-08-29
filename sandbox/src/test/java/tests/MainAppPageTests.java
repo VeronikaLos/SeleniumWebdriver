@@ -5,11 +5,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.time.Duration;
 import java.util.List;
 
 public class MainAppPageTests extends TestBase {
@@ -17,7 +14,7 @@ public class MainAppPageTests extends TestBase {
     @Test
     public void canCheckAllStickers() {
         // Navigate to the target URL
-        app.driver.get("http://localhost/litecart/en/");
+        app.openMainPage();
 
         // Locate all product elements on the page
         List<WebElement> products = app.driver.findElements(By.cssSelector("li.product"));
@@ -34,7 +31,7 @@ public class MainAppPageTests extends TestBase {
 
     @Test
     public void canCheckItemAttribute() {
-        app.driver.get("http://localhost/litecart/en/");
+        app.openMainPage();
         /// 1. Main Page
         WebElement product = app.driver.findElements(By.cssSelector("div#box-campaigns li.product")).get(0);
         //на главной странице цвет текста названия товара
@@ -94,22 +91,22 @@ public class MainAppPageTests extends TestBase {
 
         Assertions.assertEquals(regularPriceAmountMainPage, regularPriceAmountProductPage);
         Assertions.assertEquals(regularPriceTextDecorationMainPage, regularPriceTextDecorationProductPage);
-        verifyGreyColor(regularPriceColorMainPage);
-        verifyGreyColor(regularPriceColorProductPage);
+        app.verifyGreyColor(regularPriceColorMainPage);
+        app.verifyGreyColor(regularPriceColorProductPage);
 
         Assertions.assertEquals(campaignPriceAmountMainPage, campaignPriceAmountProductPage);
         Assertions.assertEquals(campaignPriceFontWeightMainPage, campaignPriceFontWeightProductPage);
-        verifyRedColor(campaignPriceColorMainPage);
-        verifyRedColor(campaignPriceColorProductPage);
+        app.verifyRedColor(campaignPriceColorMainPage);
+        app.verifyRedColor(campaignPriceColorProductPage);
 
-        Assertions.assertTrue(defineFontSize(campaignPriceSizeMainPage) > defineFontSize(regularPriceSizeMainPage));
-        Assertions.assertTrue(defineFontSize(campaignPriceSizeProductPage) > defineFontSize(regularPriceSizeProductPage));
+        Assertions.assertTrue(app.defineFontSize(campaignPriceSizeMainPage) > app.defineFontSize(regularPriceSizeMainPage));
+        Assertions.assertTrue(app.defineFontSize(campaignPriceSizeProductPage) > app.defineFontSize(regularPriceSizeProductPage));
 
     }
 
     @Test
     public void canCheckUserRegistration() {
-        app.driver.get("http://localhost:8080/litecart/en/");
+        app.openMainPage();
         app.driver.findElement(By.linkText("New customers click here")).click();
         String firstname = CommonFunctions.randomString(5);
         app.driver.findElement(By.name("firstname")).sendKeys(firstname);
@@ -118,10 +115,15 @@ public class MainAppPageTests extends TestBase {
         app.driver.findElement(By.name("address1")).sendKeys("address1");
         app.driver.findElement(By.name("postcode")).sendKeys("12345");
         app.driver.findElement(By.name("city")).sendKeys("city");
+
         app.driver.findElement(By.className("select2-selection__arrow")).click();
-        app.driver.findElements(By.className("select2-results__option")).get(224).click();
-        Select list = new Select(app.driver.findElement(By.cssSelector("select[name=zone_code]")));
-        list.selectByValue("AZ");
+        //app.driver.findElements(By.className("select2-results__option")).get(224).click();
+        app.driver.findElement(By.cssSelector(".select2-results__option[id $= 'US']")).click();
+
+//        Select list = new Select(app.driver.findElement(By.cssSelector("select[name=zone_code]")));
+//        list.selectByValue("AZ");
+
+        new Select(app.driver.findElement(By.cssSelector("select[name=zone_code]"))).selectByValue("KS");
         String email = String.format("%s@gmail.com", firstname);
         app.driver.findElement(By.name("email")).sendKeys(email);
         app.driver.findElement(By.name("phone")).sendKeys("555");
@@ -138,47 +140,10 @@ public class MainAppPageTests extends TestBase {
 
     @Test
     public void canCheckAddItemsToCart() {
-        app.driver.get("http://localhost:8080/litecart/en/");
-        WebDriverWait wait = new WebDriverWait(app.driver, Duration.ofSeconds(10));
-
-        for (int i = 0; i < 3; i++) {
-            //берем первый товар в списке и открываем его
-            app.driver.findElements(By.cssSelector("div#box-most-popular li")).get(0).click();
-
-            // проверяем есть ли опция select
-            int options = app.driver.findElements(By.cssSelector("div.buy_now tbody tr")).size();
-            if (options == 2) {
-                Select size = new Select(app.driver.findElement(By.cssSelector("td.options select")));
-                size.selectByValue("Small");
-            }
-
-            //находим элемент кол-ва товаров в корзине
-            WebElement cart = app.driver.findElement(By.cssSelector("div#cart a.content span.quantity"));
-            String quantity = cart.getAttribute("textContent");
-
-            //добавляем товар в корзину
-            app.driver.findElement(By.cssSelector("button[type='submit'][name='add_cart_product']")).click();
-
-            //ждем пока старое кол во исчезнет
-            wait.until(ExpectedConditions.invisibilityOfElementWithText(By.cssSelector("div#cart a.content span.quantity"), quantity));
-
-            //возвращаемся на главную страницу
-            app.driver.findElement(By.cssSelector("a[href='/litecart/']")).click();
-        }
-        // зайти в корзину
-        app.driver.findElement(By.cssSelector("div#cart a.link")).click();
-        //Узнать кол во продуктов в корзине
-        int size = app.driver.findElements(By.cssSelector("table.dataTable td.item")).size();
-        int sizeNew = size;
-        for (int i = 0; i < size; i++) {
-            //найти и нажать кнопку ремув
-            app.driver.findElement(By.cssSelector("button[type='submit'][name='remove_cart_item']")).click();
-            sizeNew--;
-            //ждем пока кол во товара будет на единицу меньше
-            wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("table.dataTable td.item"), sizeNew));
-        }
-        String text = app.driver.findElement(By.cssSelector("div#checkout-cart-wrapper em")).getText();
-        Assertions.assertEquals(text, "There are no items in your cart.");
+        app.openMainPage();
+        app.addProductIntoCart();
+        app.clearCart();
+        Assertions.assertEquals(app.textToVerify(), "There are no items in your cart.");
     }
 }
 

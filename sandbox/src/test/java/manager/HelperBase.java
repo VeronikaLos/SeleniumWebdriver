@@ -3,9 +3,9 @@ package manager;
 import org.openqa.selenium.By;
 
 public class HelperBase {
-    protected final ApplicationManager manager;
+    protected final Application manager;
 
-    public HelperBase(ApplicationManager manager) {
+    public HelperBase(Application manager) {
         this.manager=manager;
     }
 
